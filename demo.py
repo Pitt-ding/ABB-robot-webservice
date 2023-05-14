@@ -12,6 +12,5 @@ if __name__ == '__main__':
     root = ET.fromstring(xml_file)
     # print("\tSpeed Ratio : " + root.find(".//{0}li[@class='pnl-speedratio-ev']/{0}span".format(namespace)).text)
     print(root.find(".//{0}span".format(namespace)).text)
-    print(".//{0}li[@class='pnl-speedratio-ev']".format(namespace))
 
 

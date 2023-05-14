@@ -11,7 +11,6 @@ if __name__ == '__main__':
     result_json = requests.get(url="http://127.0.0.1/rw/iosystem/signals?json=1", auth=digit_httpauth)
     str_json = result_json.json()
     print("___")
-    # print(result_json.content)
 
 
     def iter_json(_seq: Union[dict, list]) -> None:

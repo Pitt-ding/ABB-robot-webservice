@@ -1,43 +1,26 @@
-
-USER_NAME = "Default User"
-PASSWORD = "robotics"
-# PAY_LOAD_TRUE = {'lvalue': '1'}
-# PAY_LOAD_FALSE = {'lvalue': '0'}
-# SERVER_IP = "127.0.0.1"
-# SERVER_PORT = "80"
-HOST = "127.0.0.1:80"
-# PAY_LOAD_SUBSCRIPTIONS = "resources=1&1=/rw/iosystem/signals/do_ws_signal;state&1-p=1"
-# SERVER_URL = "http://{}:{}/subscription".format(SERVER_IP, SERVER_PORT)
-# PROTOCOL = "robapi2_subscription"
-#
-# if __name__ == '__main__':
-#     # mySession = requests.session()
-#     # result_request = mySession.post(url=SERVER_URL, auth=HTTPDigestAuth(USER_NAME, PASSWORD), data=PAY_LOAD_SUBSCRIPTIONS)
-#     # print(result_request)
-#     # myWebSocket = websocket.WebSocket()
-#
-# Web socket client using https://ws4py.readthedocs.org/en/latest/
-import sys, argparse
 import xml.etree.ElementTree as ET
 from ws4py.client.threadedclient import WebSocketClient
 import requests
 from requests.auth import HTTPDigestAuth
 
-namespace = '{http://www.w3.org/1999/xhtml}'
+USER_NAME = "Default User"
+PASSWORD = "robotics"
+HOST = "127.0.0.1:80"
+NAMESPACE = '{http://www.w3.org/1999/xhtml}'
 
 
 def print_event(evt):
     root = ET.fromstring(evt)
     print(type(evt))
     # print(evt)
-    if root.findall(".//{0}li[@class='pnl-ctrlstate-ev']".format(namespace)):
-        print("\tController State : " + root.find(".//{0}li[@class='pnl-ctrlstate-ev']/{0}span".format(namespace)).text)
-    if root.findall(".//{0}li[@class='pnl-opmode-ev']".format(namespace)):
-        print("\tOperation Mode : " + root.find(".//{0}li[@class='pnl-opmode-ev']/{0}span".format(namespace)).text)
-    if root.findall(".//{0}li[@class='pnl-speedratio-ev']".format(namespace)):
-        print("\tSpeed Ratio : " + root.find(".//{0}li[@class='pnl-speedratio-ev']/{0}span".format(namespace)).text)
-    if root.findall(".//{0}li[@class='ios-signalstate-ev']".format(namespace)):
-        print("\tdo_ws_signal : " + root.find(".//{0}li[@class='ios-signalstate-ev']/{0}span[@class='lvalue']".format(namespace)).text)
+    if root.findall(".//{0}li[@class='pnl-ctrlstate-ev']".format(NAMESPACE)):
+        print("\tController State : " + root.find(".//{0}li[@class='pnl-ctrlstate-ev']/{0}span".format(NAMESPACE)).text)
+    if root.findall(".//{0}li[@class='pnl-opmode-ev']".format(NAMESPACE)):
+        print("\tOperation Mode : " + root.find(".//{0}li[@class='pnl-opmode-ev']/{0}span".format(NAMESPACE)).text)
+    if root.findall(".//{0}li[@class='pnl-speedratio-ev']".format(NAMESPACE)):
+        print("\tSpeed Ratio : " + root.find(".//{0}li[@class='pnl-speedratio-ev']/{0}span".format(NAMESPACE)).text)
+    if root.findall(".//{0}li[@class='ios-signalstate-ev']".format(NAMESPACE)):
+        print("\tdo_ws_signal : " + root.find(".//{0}li[@class='ios-signalstate-ev']/{0}span[@class='lvalue']".format(NAMESPACE)).text)
 
 # This class encapsulates the Web Socket Callbacks functions.
 class RobWebSocketClient(WebSocketClient):
