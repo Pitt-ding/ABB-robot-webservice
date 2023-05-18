@@ -121,7 +121,7 @@ class SqlOperation:
             return
         my_cursor = db.cursor()
         try:
-            print(self.COMMAND_CREATE_SIGNAL_TABLE.format(_table_name, _column_name, _primary_key))
+            # print(self.COMMAND_CREATE_SIGNAL_TABLE.format(_table_name, _column_name, _primary_key))
             my_cursor.execute(self.COMMAND_CREATE_SIGNAL_TABLE.format(_table_name, _column_name, _primary_key))
             db.commit()
         except:
@@ -183,7 +183,7 @@ if __name__ == '__main__':
     #     print("wrong status code {}: ".format(result_xml.status_code))
     # my_sql.show_table('robotsignals')
 
-    # sql function demo-----------------------------------------------------------------
+    # sql 常用sql创建表及更新数据指令-----------------------------------------------------------------
     # my_sql.create_table("""table_name""", """
     # `id` INT UNSIGNED AUTO_INCREMENT,
     # `name` VARCHAR(100),
