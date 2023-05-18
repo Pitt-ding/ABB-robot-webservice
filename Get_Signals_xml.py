@@ -37,66 +37,138 @@ class SqlOperation:
         self.PASSWORD = _pass_word
         self.HOST = _host
         self.DATABASE = _database
-        self.COMMAND_INSERT = "INSERT INTO RobotSignals.signal_table(name, type, category, lvalue, lstate)" \
+        self.COMMAND_INSERT = "INSERT INTO {}({})" \
                               " values " \
-                              "('{1:s}', '{2:s}', '{3:s}', '{4:s}', '{5:s}');"
+                              "{};"
         self.COMMAND_DROP = "Drop table {};"
         self.COMMAND_DELETE = "DELETE FROM {0} where {1} = '{2}';"
         self.COMMAND_SHOW_TABLE = "SHOW TABLES"
         self.COMMAND_USE_DATABASE = "SHOW DATABASES"
         self.COMMAND_USE_DATABASE = "USE {}"
         self.COMMAND_TRUNCATE_TABLE = "TRUNCATE table {};"
-        self.COMMAND_CREATE_SIGNAL_TABLE = "create table if not exists `signal_table`(\
-                                                `id` INT UNSIGNED AUTO_INCREMENT,\
-                                                `name` VARCHAR(100),\
-                                                `type` VARCHAR(100),\
-                                                `category` VARCHAR(40),\
-                                                `lvalue` varchar(40),\
-                                                `lstate` varchar(40),\
-                                                PRIMARY KEY ( `id` )\
-                                            )ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+        self.COMMAND_UPDATE = "UPDATE {} SET {} where {}"
+        self.COMMAND_CREATE_SIGNAL_TABLE = """create table if not exists `{}`({}
+                                                PRIMARY KEY ( `{}` )\
+                                            )ENGINE=InnoDB DEFAULT CHARSET=utf8;"""
 
-    def insert_data(self, _log_value):
-        db = pymysql.connect(host=self.HOST, user=self.USER_NAME, password=self.PASSWORD, database=self.DATABASE)
+    def insert_data(self, _table_name: str, _column_name: str, _table_value: tuple) -> None:
+        try:
+            db = pymysql.connect(host=self.HOST, user=self.USER_NAME, password=self.PASSWORD, database=self.DATABASE)
+        except:
+            print('Insert data, Connect to sql failed!')
+            return
         my_cursor = db.cursor()
-        my_cursor.execute(self.COMMAND_INSERT.format(*_log_value))
-        db.commit()
+        try:
+            # print(self.COMMAND_INSERT.format(_table_name, _column_name, _table_value))
+            my_cursor.execute(self.COMMAND_INSERT.format(_table_name, _column_name, _table_value))
+            db.commit()
+            print('Insert data done!')
+        except:
+            db.rollback()
+            print('Insert data failed!')
+        db.close()
 
-    def update_data(self, _log_value):
-        db = pymysql.connect(host=self.HOST, user=self.USER_NAME, password=self.PASSWORD, database=self.DATABASE)
+    def update_data(self, _table_name: str, _set_value: str, _where_value: str) -> None:
+        try:
+            db = pymysql.connect(host=self.HOST, user=self.USER_NAME, password=self.PASSWORD, database=self.DATABASE)
+        except:
+            print('Update data, Connect to sql failed!')
+            return
         my_cursor = db.cursor()
-        my_cursor.execute(self.COMMAND_INSERT.format(*_log_value))
-        db.commit()
+        try:
+            print(self.COMMAND_UPDATE.format(_table_name, _set_value, _where_value))
+            my_cursor.execute(self.COMMAND_UPDATE.format(_table_name, _set_value, _where_value))
+            db.commit()
+            print('Update data done!')
+        except:
+            db.rollback()
+            print('update data failed!')
+        db.close()
 
-    def drop_table(self, _table_name):
-        db = pymysql.connect(host=self.HOST, user=self.USER_NAME, password=self.PASSWORD, database=self.DATABASE)
-        my_cursor = db.cursor()
-        my_cursor.execute(self.COMMAND_DROP.format(_table_name))
-        db.commit()
+    def delete_data(self, _table_name: str, _column_name: str, _value: str) -> None:
+        try:
+            db = pymysql.connect(host=self.HOST, user=self.USER_NAME, password=self.PASSWORD, database=self.DATABASE)
+        except:
+            print('Delete data, Connect to sql failed!')
+            return
 
-    def delete_data(self, _table_name, _column_name, _value):
-        db = pymysql.connect(host=self.HOST, user=self.USER_NAME, password=self.PASSWORD, database=self.DATABASE)
         my_cursor = db.cursor()
-        my_cursor.execute(self.COMMAND_DELETE.format(_table_name, _column_name, _value))
-        db.commit()
+        try:
+            my_cursor.execute(self.COMMAND_DELETE.format(_table_name, _column_name, _value))
+            db.commit()
+            print('Delete data Done!')
+        except:
+            db.rollback()
+            print('Delete data failed!')
+        db.close()
 
-    def show_table(self):
-        db = pymysql.connect(host=self.HOST, user=self.USER_NAME, password=self.PASSWORD, database=self.DATABASE)
+    def show_table(self) -> None:
+        try:
+            db = pymysql.connect(host=self.HOST, user=self.USER_NAME, password=self.PASSWORD, database=self.DATABASE)
+        except:
+            print('Show table, Connect to sql failed!')
+            return
         my_cursor = db.cursor()
-        # my_cursor.execute(self.COMMAND_USE_DATABASE.format(_database))
         my_cursor.execute(self.COMMAND_SHOW_TABLE)
         for _i in my_cursor.fetchall():
             print("data table: {}".format(_i[0]))
 
-    def create_table(self):
-        db = pymysql.connect(host=self.HOST, user=self.USER_NAME, password=self.PASSWORD, database=self.DATABASE)
+    def create_table(self, _table_name: str, _column_name: str, _primary_key: str) -> None:
+        try:
+            db = pymysql.connect(host=self.HOST, user=self.USER_NAME, password=self.PASSWORD, database=self.DATABASE)
+        except:
+            print('Create table, Connect to sql failed!')
+            return
         my_cursor = db.cursor()
-        my_cursor.execute(self.COMMAND_CREATE_SIGNAL_TABLE)
+        try:
+            print(self.COMMAND_CREATE_SIGNAL_TABLE.format(_table_name, _column_name, _primary_key))
+            my_cursor.execute(self.COMMAND_CREATE_SIGNAL_TABLE.format(_table_name, _column_name, _primary_key))
+            db.commit()
+        except:
+            print("Create table failed!")
+            db.rollback()
+        db.close()
 
-    def truncate_table(self, _table_name):
-        db = pymysql.connect(host=self.HOST, user=self.USER_NAME, password=self.PASSWORD, database=self.DATABASE)
+    def drop_table(self, _table_name: str) -> None:
+        try:
+            db = pymysql.connect(host=self.HOST, user=self.USER_NAME, password=self.PASSWORD, database=self.DATABASE)
+        except:
+            print('Update data, Connect to sql failed!')
+            return
         my_cursor = db.cursor()
-        my_cursor.execute(self.COMMAND_TRUNCATE_TABLE.format(_table_name))
+        try:
+            my_cursor.execute(self.COMMAND_DROP.format(_table_name))
+            db.commit()
+            print('Drop data done!')
+        except:
+            db.rollback()
+        db.close()
+
+    def truncate_table(self, _table_name: str) -> None:
+        try:
+            db = pymysql.connect(host=self.HOST, user=self.USER_NAME, password=self.PASSWORD, database=self.DATABASE)
+        except:
+            print('truncate table, Connect to sql failed!')
+            return
+        my_cursor = db.cursor()
+        try:
+            my_cursor.execute(self.COMMAND_TRUNCATE_TABLE.format(_table_name))
+            print('Truncate table Done!')
+        except:
+            db.rollback()
+            print('Truncate table failed!')
+        db.close()
+
+    def parse_tuple(self, _tuple: tuple) -> str:
+        _string = "("
+        for _i in range(len(_tuple)):
+            if _i < len(_tuple)-1:
+                _string += _tuple[_i] + ","
+            else:
+                _string += _tuple[_i]
+        _string += ")"
+        print(_string)
+        return _string
 
 
 if __name__ == '__main__':
@@ -104,12 +176,29 @@ if __name__ == '__main__':
     digit_httpauth = HTTPDigestAuth(Username, pass_word)
     result_xml = requests.get(url="http://127.0.0.1/rw/iosystem/signals", auth=digit_httpauth)
     print("___")
-    if result_xml.status_code == 200:
-        print(result_xml.text)
-        xml_parse(result_xml.text, my_sql.insert_data)
-    else:
-        print("wrong status code {}: ".format(result_xml.status_code))
+    # if result_xml.status_code == 200:
+    #     print(result_xml.text)
+    #     xml_parse(result_xml.text, my_sql.insert_data)
+    # else:
+    #     print("wrong status code {}: ".format(result_xml.status_code))
     # my_sql.show_table('robotsignals')
+
+    # sql function demo-----------------------------------------------------------------
+    # my_sql.create_table("""table_name""", """
+    # `id` INT UNSIGNED AUTO_INCREMENT,
+    # `name` VARCHAR(100),
+    # `type` VARCHAR(100),
+    # `category` VARCHAR(40),
+    # `lvalue` varchar(40),
+    # `lstate` varchar(40),""", """id""")
+    my_sql.insert_data("table_name", """name,type,category,lvalue,lstate""", ('pitt', 'int', 'None', '2', 'No simulate'))
+    # my_sql.update_data("table_name", "lvalue= '5'", "name = 'pitt'")
+    # my_sql.delete_data('table_name', 'lvalue', '5')
+    # my_sql.drop_table("table_name")
+    # my_sql.show_table()
+    # my_sql.truncate_table("table_name")
+
+
 
 
 
