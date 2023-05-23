@@ -22,10 +22,11 @@ def print_event(evt):
     if root.findall(".//{0}li[@class='ios-signalstate-ev']".format(NAMESPACE)):
         print("\tdo_ws_signal : " + root.find(".//{0}li[@class='ios-signalstate-ev']/{0}span[@class='lvalue']".format(NAMESPACE)).text)
 
+
 # This class encapsulates the Web Socket Callbacks functions.
 class RobWebSocketClient(WebSocketClient):
     def opened(self):
-        print("Web Sockect connection established")
+        print("Web Socket connection established")
 
     def closed(self, code, reason=None):
         print("Closed down", code, reason)
@@ -37,6 +38,7 @@ class RobWebSocketClient(WebSocketClient):
             print_event(event_xml.data.decode("utf-8"))
         else:
             print("Received Illegal Event " + str(event_xml))
+
 
 # The main RobotWare Panel class
 class RWPanel:

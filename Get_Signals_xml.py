@@ -10,6 +10,7 @@ from requests.auth import HTTPDigestAuth
 import xml.etree.ElementTree as ET
 import pymysql
 
+
 Username = "Default User"
 pass_word = "robotics"
 NAMESPACE = '{http://www.w3.org/1999/xhtml}'
@@ -32,6 +33,9 @@ def xml_parse(_xml_str, _sql_log_fun):
 
 
 class SqlOperation:
+    """
+    common operation for sql
+    """
     def __init__(self, _host="localhost", _user="root", _pass_word="root", _database="RobotSignals"):
         self.USER_NAME = _user
         self.PASSWORD = _pass_word
